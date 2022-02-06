@@ -23,24 +23,26 @@ export const Mutation: MutationResolvers = {
 
       const stream = createReadStream();
 
-      const directory = path.join(
+      const directory =
         process.env.NODE_ENV === "development"
           ? context.config.write_directory.dev
           : process.env.NODE_ENV === "staging"
           ? context.config.write_directory.stag
-          : context.config.write_directory.prod,
-        `/uploads/${mimetype}/`
-      );
+          : context.config.write_directory.prod;
 
       if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
       }
 
-      const fileName = `${context.token.user?._id}-${Date.now()}-${filename}`;
+      const filePath = path.join(
+        directory,
+        `${context.token.user?._id}-${Date.now()}-${filename}`
+      );
 
-      const out = fs.createWriteStream(path.join(directory, fileName));
+      const out = fs.createWriteStream(filePath);
 
       stream.pipe(out);
+
       finished(out, (err) => {
         if (err) {
           console.log(err);
@@ -49,7 +51,7 @@ export const Mutation: MutationResolvers = {
       });
 
       const newMedia = new Media({
-        path: path.join("public", fileName),
+        path: filePath,
         mimetype,
         title: args.singleFileUploadInput.title,
         created_by: context.token.user?._id,

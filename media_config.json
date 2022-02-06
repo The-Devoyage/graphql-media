@@ -1,9 +1,9 @@
 {
-  "read_directory": "/app/public",
+  "read_directory": "/public",
   "write_directory": {
-    "dev": "/app/public",
-    "stag": "/app/public",
-    "prod": "/app/public"
+    "dev": "/public",
+    "stag": "/public",
+    "prod": "/public"
   },
   "mime_types": ["image/jpeg", "image/jpg", "image/png"],
   "express_route": "/public"

@@ -1,7 +1,7 @@
 {
   "read_directory": "/app/public",
   "write_directory": {
-    "dev": "public",
+    "dev": "/app/public",
     "stag": "/app/public",
     "prod": "/app/public"
   },

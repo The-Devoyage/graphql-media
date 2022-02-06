@@ -34,11 +34,11 @@ export const Mutation: MutationResolvers = {
         fs.mkdirSync(directory, { recursive: true });
       }
 
-      const filePath = `/uploads/${mimetype}/${
+      const fileName = `/uploads/${mimetype}/${
         context.token.user?._id
       }-${Date.now()}-${filename}`;
 
-      const out = fs.createWriteStream(path.join(directory, filePath));
+      const out = fs.createWriteStream(path.join(directory, fileName));
 
       stream.pipe(out);
       finished(out, (err) => {
@@ -49,7 +49,7 @@ export const Mutation: MutationResolvers = {
       });
 
       const newMedia = new Media({
-        path: path.join("public", filePath),
+        path: path.join("public", fileName),
         mimetype,
         title: args.singleFileUploadInput.title,
         created_by: context.token.user?._id,

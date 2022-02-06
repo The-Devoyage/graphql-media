@@ -61,8 +61,10 @@ export const Mutation: MutationResolvers = {
 
         await newMedia.save();
 
-        media = await Media.findOne<IMedia>({ _id: newMedia._id });
+        media = newMedia;
       });
+
+      media = await Media.findOne<IMedia>({ _id: media?._id });
 
       if (!media) {
         throw new Error("Something went wrong when saving your file.");

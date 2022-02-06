@@ -1,0 +1,19 @@
+FROM node:16.13.0 as npm-build
+ARG GITHUB_TOKEN  
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
+COPY .npmrc .npmrc  
+RUN npm install
+RUN rm -f .npmrc
+COPY . .
+RUN npm run build
+
+FROM node:latest
+WORKDIR /app/dist
+COPY --from=npm-build /app/dist /app/dist
+COPY --from=npm-build /app/node_modules /app/node_modules
+COPY --from=npm-build /app/package*.json /app/
+COPY --from=npm-build /media_config.json /app/media_config.json
+EXPOSE 5006
+CMD [ "node", "server.js" ]

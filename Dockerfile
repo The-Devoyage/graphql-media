@@ -7,5 +7,4 @@ COPY media_config.json media_config.json
 RUN npm install
 COPY . .
 EXPOSE 5000
-VOLUME /app/public
 CMD [ "npm", "run", "dev" ]

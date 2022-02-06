@@ -44,30 +44,26 @@ export const Mutation: MutationResolvers = {
 
       stream.pipe(out);
 
-      let media: IMedia | undefined | null;
-
-      finished(out, async (err) => {
+      finished(out, (err) => {
         if (err) {
           console.log(err);
           throw new Error("Something went wrong when uploading your file.");
         }
-
-        const newMedia = new Media({
-          path: path.join(context.config.express_route, mimetype, fileName),
-          mimetype,
-          title: args.singleFileUploadInput.title,
-          created_by: context.token.user?._id,
-        });
-
-        await newMedia.save();
-
-        media = newMedia;
       });
 
-      media = await Media.findOne<IMedia>({ _id: media?._id });
+      const newMedia = new Media({
+        path: path.join(context.config.express_route, mimetype, fileName),
+        mimetype,
+        title: args.singleFileUploadInput.title,
+        created_by: context.token.user?._id,
+      });
+
+      await newMedia.save();
+
+      const media = await Media.findOne<IMedia>({ _id: newMedia?._id });
 
       if (!media) {
-        throw new Error("Something went wrong when saving your file.");
+        throw new Error("This media/file can not be found.");
       }
 
       return media;

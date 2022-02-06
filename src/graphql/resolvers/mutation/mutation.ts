@@ -3,7 +3,7 @@ import { finished } from "stream";
 import fs from "fs";
 import path from "path";
 import { Media } from "@src/models";
-import { MutationResolvers } from "types/generated";
+import { MutationResolvers, Media as IMedia } from "types/generated";
 
 export const Mutation: MutationResolvers = {
   singleFileUpload: async (_parent, args, context) => {
@@ -23,43 +23,46 @@ export const Mutation: MutationResolvers = {
 
       const stream = createReadStream();
 
-      const directory =
+      const rootUploadDirectory =
         process.env.NODE_ENV === "development"
           ? context.config.write_directory.dev
           : process.env.NODE_ENV === "staging"
           ? context.config.write_directory.stag
           : context.config.write_directory.prod;
 
-      if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
+      const fullUploadDirectory = path.join(rootUploadDirectory, mimetype);
+
+      if (!fs.existsSync(fullUploadDirectory)) {
+        fs.mkdirSync(fullUploadDirectory, { recursive: true });
       }
 
-      const filePath = path.join(
-        directory,
-        `${context.token.user?._id}-${Date.now()}-${filename}`
-      );
+      const fileName = `${context.token.user?._id}-${Date.now()}-${filename}`;
 
-      const out = fs.createWriteStream(filePath);
+      const out = fs.createWriteStream(
+        path.join(fullUploadDirectory, fileName)
+      );
 
       stream.pipe(out);
 
-      finished(out, (err) => {
+      let media: IMedia | undefined | null;
+
+      finished(out, async (err) => {
         if (err) {
           console.log(err);
           throw new Error("Something went wrong when uploading your file.");
         }
+
+        const newMedia = new Media({
+          path: path.join(context.config.express_route, mimetype, fileName),
+          mimetype,
+          title: args.singleFileUploadInput.title,
+          created_by: context.token.user?._id,
+        });
+
+        await newMedia.save();
+
+        media = await Media.findOne<IMedia>({ _id: newMedia._id });
       });
-
-      const newMedia = new Media({
-        path: filePath,
-        mimetype,
-        title: args.singleFileUploadInput.title,
-        created_by: context.token.user?._id,
-      });
-
-      await newMedia.save();
-
-      const media = await Media.findOne({ _id: newMedia._id });
 
       if (!media) {
         throw new Error("Something went wrong when saving your file.");

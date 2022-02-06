@@ -8,5 +8,4 @@ RUN npm install
 COPY . .
 EXPOSE 5000
 VOLUME /app/public
-RUN npx tsc
 CMD [ "npm", "run", "dev" ]

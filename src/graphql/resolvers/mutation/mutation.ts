@@ -23,20 +23,20 @@ export const Mutation: MutationResolvers = {
 
       const stream = createReadStream();
 
-      const directory =
+      const directory = path.join(
         process.env.NODE_ENV === "development"
           ? context.config.write_directory.dev
           : process.env.NODE_ENV === "staging"
           ? context.config.write_directory.stag
-          : context.config.write_directory.prod;
+          : context.config.write_directory.prod,
+        `/uploads/${mimetype}/`
+      );
 
       if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
       }
 
-      const fileName = `/uploads/${mimetype}/${
-        context.token.user?._id
-      }-${Date.now()}-${filename}`;
+      const fileName = `${context.token.user?._id}-${Date.now()}-${filename}`;
 
       const out = fs.createWriteStream(path.join(directory, fileName));
 

@@ -33,6 +33,9 @@ export const TypeDefs = gql`
     _id: StringFieldFilter
     title: StringFieldFilter
     mimetype: StringFieldFilter
+    createdAt: StringFieldFilter
+    updatedAt: StringFieldFilter
+    config: FilterConfig
   }
 
   type GetMediaResponse {

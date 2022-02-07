@@ -55,10 +55,13 @@ export type FilterConfig = {
 
 export type GetMediaInput = {
   _id?: InputMaybe<StringFieldFilter>;
+  config?: InputMaybe<FilterConfig>;
+  createdAt?: InputMaybe<StringFieldFilter>;
   created_by?: InputMaybe<StringFieldFilter>;
   mimetype?: InputMaybe<StringFieldFilter>;
   path?: InputMaybe<StringFieldFilter>;
   title?: InputMaybe<StringFieldFilter>;
+  updatedAt?: InputMaybe<StringFieldFilter>;
 };
 
 export type GetMediaResponse = {

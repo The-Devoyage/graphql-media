@@ -10,6 +10,7 @@ export const Query: QueryResolvers = {
 
       const { filters, options } = GenerateMongo({
         fieldFilters: args.getMediaInput,
+        config: args.getMediaInput.config,
       });
 
       const media = await Media.findAndPaginate<IMedia>(filters, options);

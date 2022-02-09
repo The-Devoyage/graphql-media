@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
 
-export const TypeDefs = gql`
+export const Media = gql`
   scalar Upload
 
   type Media @key(fields: "_id") {

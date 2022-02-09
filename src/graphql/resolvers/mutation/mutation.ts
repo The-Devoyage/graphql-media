@@ -1,14 +1,14 @@
-import { checkAuth } from "@src/helpers";
 import { finished } from "stream";
 import fs from "fs";
 import path from "path";
 import { Media } from "@src/models";
 import { MutationResolvers, Media as IMedia } from "types/generated";
+import { Helpers } from "@the-devoyage/micro-auth-helpers";
 
 export const Mutation: MutationResolvers = {
   singleFileUpload: async (_parent, args, context) => {
     try {
-      checkAuth({ context, requireUser: true });
+      Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
       const { createReadStream, filename, mimetype } = await args
         .singleFileUploadInput.file;
@@ -36,7 +36,9 @@ export const Mutation: MutationResolvers = {
         fs.mkdirSync(fullUploadDirectory, { recursive: true });
       }
 
-      const fileName = `${context.token.user?._id}-${Date.now()}-${filename}`;
+      const fileName = `${
+        context.auth.decodedToken?.user?._id
+      }-${Date.now()}-${filename}`;
 
       const out = fs.createWriteStream(
         path.join(fullUploadDirectory, fileName)
@@ -55,7 +57,7 @@ export const Mutation: MutationResolvers = {
         path: path.join(context.config.express_route, mimetype, fileName),
         mimetype,
         title: args.singleFileUploadInput.title,
-        created_by: context.token.user?._id,
+        created_by: context.auth.decodedToken?.user?._id,
       });
 
       await newMedia.save();

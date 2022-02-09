@@ -11,8 +11,8 @@ import express from "express";
 import cors from "cors";
 import { graphqlUploadExpress } from "graphql-upload";
 import { generateMediaConfig } from "@src/helpers";
-import { Context, TokenContext } from "types/context";
 import fs from "fs";
+import { Helpers } from "@the-devoyage/micro-auth-helpers";
 dotenv.config();
 
 const app = express();
@@ -31,22 +31,8 @@ let apolloServer;
 const startServer = async () => {
   apolloServer = new ApolloServer({
     schema: applyMiddleware(schema),
-    context: ({ req }): Context => {
-      const { token, isauth } = req.headers;
-      let parsedToken: TokenContext = {};
-      let parsedAuthStatus: boolean = false;
-      if (token !== "undefined" && typeof token === "string") {
-        parsedToken = JSON.parse(token);
-      }
-      if (isauth !== "undefined" && typeof isauth === "string") {
-        parsedAuthStatus = JSON.parse(isauth);
-      }
-
-      return {
-        token: parsedToken,
-        isAuth: parsedAuthStatus,
-        config: mediaConfig,
-      };
+    context: ({ req }) => {
+      Helpers.Service.GenerateContext({ req, custom: { config: mediaConfig } });
     },
   });
 

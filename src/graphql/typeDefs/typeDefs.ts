@@ -1,3 +1,3 @@
-import { TypeDefs } from "./media";
+import { Media } from "./media";
 
-export const typeDefs = TypeDefs;
+export const typeDefs = { Media };

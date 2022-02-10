@@ -32,7 +32,7 @@ const startServer = async () => {
   apolloServer = new ApolloServer({
     schema: applyMiddleware(schema),
     context: ({ req }) => {
-      Helpers.Service.GenerateContext({ req, custom: { config: mediaConfig } });
+      Helpers.Service.GenerateContext({ req, inject: { config: mediaConfig } });
     },
   });
 

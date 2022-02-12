@@ -37,7 +37,7 @@ export const Mutation: MutationResolvers = {
       }
 
       const fileName = `${
-        context.auth.decodedToken?.user?._id
+        context.auth.payload.user?._id
       }-${Date.now()}-${filename}`;
 
       const out = fs.createWriteStream(
@@ -57,7 +57,7 @@ export const Mutation: MutationResolvers = {
         path: path.join(context.config.express_route, mimetype, fileName),
         mimetype,
         title: args.singleFileUploadInput.title,
-        created_by: context.auth.decodedToken?.user?._id,
+        created_by: context.auth.payload.user?._id,
       });
 
       await newMedia.save();

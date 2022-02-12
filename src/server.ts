@@ -31,12 +31,11 @@ let apolloServer;
 const startServer = async () => {
   apolloServer = new ApolloServer({
     schema: applyMiddleware(schema),
-    context: ({ req }) => {
+    context: ({ req }) =>
       Helpers.Subgraph.GenerateContext({
         req,
         inject: { config: mediaConfig },
-      });
-    },
+      }),
   });
 
   await apolloServer.start();

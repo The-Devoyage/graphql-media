@@ -4,6 +4,6 @@ import { resolvers } from "./resolvers";
 import { GraphQL } from "@the-devoyage/mongo-filter-generator";
 
 export const schema = buildSubgraphSchema([
-  { typeDefs: typeDefs.Media, resolvers },
+  { typeDefs: typeDefs.Media, resolvers: resolvers.Media },
   { typeDefs: GraphQL.typeDefs, resolvers: GraphQL.resolvers },
 ]);

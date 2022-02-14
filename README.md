@@ -4,9 +4,7 @@ The `@the-devoyage/graphql-media` microservice is a file uploading server that c
 
 ## Features
 
-### Media
-
-Save information about each file upload in type `media`:
+Enable file uploading of static assets such as images, video, audio, text documents, and pdfs. Each asset that is uploaded also creates a reference record of type `Media` , saved to a mongo db instance.
 
 ```graphql
 type Media {
@@ -15,7 +13,7 @@ type Media {
   updatedAt: String!
   path: String!
   mimetype: String!
-  created_by: User! # External Service, Details below
+  created_by: User!
   title: String!
 }
 ```
@@ -36,17 +34,13 @@ By default files are saved in an organized manner in the `/uploads/MIMETYPE/` di
 
 ### Install Dependencies
 
-1. Required External Dependencies
-
-- `@the-devoyage/mongo-filter-generator` - Adds the pagination and filtering abilities to the service. [Purchase Access](https://basetools.io/checkout/vyOL9ATx)
-
-2. Once you have access to the required repos above, be sure to login to the Github registry with NPM.
+1. Login to the Github registry with NPM.
 
 ```
 npm login --registry=https://npm.pkg.github.com
 ```
 
-3. Install Dependencies
+2. Install Dependencies
 
 ```
 npm install
@@ -54,7 +48,7 @@ npm install
 
 If you are using docker to build and run this server, you will need to pass the github token along to the build process.
 
-Assign an environment variable to the Github Token locally:
+Assign an environment variable to the Github Token on the Host Machine, as the Dockerfile will check environment variables for the token at build time. Be sure to expire tokens after use.
 
 ```bash
 export GITHUB_TOKEN=mytoken
@@ -66,7 +60,7 @@ For docker, you can run:
 docker build -t --build-arg GTIHUB_TOKEN=${GITHUB_TOKEN} .
 ```
 
-4. Configure Environment Variables
+### Configure Environment Variables
 
 All environment variables are saved in the root of this repo in a file called `.env.example`. Move this file to `.env` and fill in the variables.
 

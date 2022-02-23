@@ -15,6 +15,7 @@ export type Scalars = {
   Float: number;
   DateTime: any;
   ObjectID: any;
+  /** The `Upload` scalar type represents a file upload. */
   Upload: any;
   _Any: any;
 };
@@ -63,7 +64,7 @@ export type GetMediaInput = {
 
 export type GetMediaResponse = {
   __typename?: 'GetMediaResponse';
-  data?: Maybe<Array<Maybe<Media>>>;
+  data: Array<Media>;
   stats?: Maybe<Stats>;
 };
 
@@ -306,7 +307,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type GetMediaResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['GetMediaResponse'] = ResolversParentTypes['GetMediaResponse']> = ResolversObject<{
-  data?: Resolver<Maybe<Array<Maybe<ResolversTypes['Media']>>>, ParentType, ContextType>;
+  data?: Resolver<Array<ResolversTypes['Media']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

@@ -41,9 +41,14 @@ export enum BooleanFilterByEnum {
   Ne = 'NE'
 }
 
-export type CreateMediaInput = {
-  title: Scalars['String'];
-  type: Scalars['String'];
+export type DeleteMediaInput = {
+  _ids: Array<Scalars['ObjectID']>;
+};
+
+export type DeleteMediaResponse = {
+  __typename?: 'DeleteMediaResponse';
+  acknowledged: Scalars['Boolean'];
+  deletedCount: Scalars['Int'];
 };
 
 export type FilterConfig = {
@@ -101,7 +106,13 @@ export type Media = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  deleteMedia: DeleteMediaResponse;
   singleFileUpload: Media;
+};
+
+
+export type MutationDeleteMediaArgs = {
+  deleteMediaInput?: InputMaybe<DeleteMediaInput>;
 };
 
 
@@ -240,8 +251,9 @@ export type ResolversTypes = ResolversObject<{
   BooleanArrayFilter: BooleanArrayFilter;
   BooleanFieldFilter: BooleanFieldFilter;
   BooleanFilterByEnum: BooleanFilterByEnum;
-  CreateMediaInput: CreateMediaInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
+  DeleteMediaInput: DeleteMediaInput;
+  DeleteMediaResponse: ResolverTypeWrapper<DeleteMediaResponse>;
   FilterConfig: FilterConfig;
   GetMediaInput: GetMediaInput;
   GetMediaResponse: ResolverTypeWrapper<GetMediaResponse>;
@@ -273,8 +285,9 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
   BooleanArrayFilter: BooleanArrayFilter;
   BooleanFieldFilter: BooleanFieldFilter;
-  CreateMediaInput: CreateMediaInput;
   DateTime: Scalars['DateTime'];
+  DeleteMediaInput: DeleteMediaInput;
+  DeleteMediaResponse: DeleteMediaResponse;
   FilterConfig: FilterConfig;
   GetMediaInput: GetMediaInput;
   GetMediaResponse: GetMediaResponse;
@@ -306,6 +319,12 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type DeleteMediaResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DeleteMediaResponse'] = ResolversParentTypes['DeleteMediaResponse']> = ResolversObject<{
+  acknowledged?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  deletedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GetMediaResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['GetMediaResponse'] = ResolversParentTypes['GetMediaResponse']> = ResolversObject<{
   data?: Resolver<Array<ResolversTypes['Media']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
@@ -324,6 +343,7 @@ export type MediaResolvers<ContextType = Context, ParentType extends ResolversPa
 }>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  deleteMedia?: Resolver<ResolversTypes['DeleteMediaResponse'], ParentType, ContextType, RequireFields<MutationDeleteMediaArgs, never>>;
   singleFileUpload?: Resolver<ResolversTypes['Media'], ParentType, ContextType, RequireFields<MutationSingleFileUploadArgs, 'singleFileUploadInput'>>;
 }>;
 
@@ -369,6 +389,7 @@ export type _ServiceResolvers<ContextType = Context, ParentType extends Resolver
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
   DateTime?: GraphQLScalarType;
+  DeleteMediaResponse?: DeleteMediaResponseResolvers<ContextType>;
   GetMediaResponse?: GetMediaResponseResolvers<ContextType>;
   Media?: MediaResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

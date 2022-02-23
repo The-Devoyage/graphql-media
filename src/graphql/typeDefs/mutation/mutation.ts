@@ -8,7 +8,17 @@ export const Mutation = gql`
     title: String!
   }
 
+  input DeleteMediaInput {
+    _ids: [ObjectID!]!
+  }
+
+  type DeleteMediaResponse {
+    acknowledged: Boolean!
+    deletedCount: Int!
+  }
+
   extend type Mutation {
     singleFileUpload(singleFileUploadInput: SingleFileUploadInput!): Media!
+    deleteMedia(deleteMediaInput: DeleteMediaInput!): DeleteMediaResponse!
   }
 `;

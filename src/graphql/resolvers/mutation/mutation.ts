@@ -74,4 +74,29 @@ export const Mutation: MutationResolvers = {
       throw error;
     }
   },
+  deleteMedia: async (_, args, context) => {
+    try {
+      Helpers.Resolver.CheckAuth({ context, requireUser: true });
+
+      const media = await Media.find({
+        _id: { $in: args.deleteMediaInput?._ids },
+      });
+
+      if (media.some((m) => m?.created_by !== context.auth.payload.user?._id)) {
+        Helpers.Resolver.LimitRole({
+          userRole: context.auth.payload.user?.role,
+          roleLimit: 1,
+        });
+      }
+
+      const deleteStatus = await Media.deleteMany({
+        _id: { $in: args.deleteMediaInput?._ids },
+      });
+
+      return deleteStatus;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
 };

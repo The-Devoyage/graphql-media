@@ -13,7 +13,6 @@ export const Mutation = gql`
   }
 
   type DeleteMediaResponse {
-    acknowledged: Boolean!
     deletedCount: Int!
   }
 

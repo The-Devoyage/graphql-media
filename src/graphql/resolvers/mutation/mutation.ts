@@ -97,7 +97,7 @@ export const Mutation: MutationResolvers = {
         _id: { $in: args.deleteMediaInput?._ids },
       });
 
-      return deleteStatus;
+      return { deletedCount: deleteStatus.deletedCount };
     } catch (error) {
       console.log(error);
       throw error;

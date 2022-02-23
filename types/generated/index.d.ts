@@ -47,7 +47,6 @@ export type DeleteMediaInput = {
 
 export type DeleteMediaResponse = {
   __typename?: 'DeleteMediaResponse';
-  acknowledged: Scalars['Boolean'];
   deletedCount: Scalars['Int'];
 };
 
@@ -320,7 +319,6 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type DeleteMediaResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DeleteMediaResponse'] = ResolversParentTypes['DeleteMediaResponse']> = ResolversObject<{
-  acknowledged?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   deletedCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

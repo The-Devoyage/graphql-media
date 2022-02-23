@@ -112,7 +112,7 @@ export type Mutation = {
 
 
 export type MutationDeleteMediaArgs = {
-  deleteMediaInput?: InputMaybe<DeleteMediaInput>;
+  deleteMediaInput: DeleteMediaInput;
 };
 
 
@@ -343,7 +343,7 @@ export type MediaResolvers<ContextType = Context, ParentType extends ResolversPa
 }>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  deleteMedia?: Resolver<ResolversTypes['DeleteMediaResponse'], ParentType, ContextType, RequireFields<MutationDeleteMediaArgs, never>>;
+  deleteMedia?: Resolver<ResolversTypes['DeleteMediaResponse'], ParentType, ContextType, RequireFields<MutationDeleteMediaArgs, 'deleteMediaInput'>>;
   singleFileUpload?: Resolver<ResolversTypes['Media'], ParentType, ContextType, RequireFields<MutationSingleFileUploadArgs, 'singleFileUploadInput'>>;
 }>;
 

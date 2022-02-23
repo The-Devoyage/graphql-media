@@ -78,11 +78,15 @@ export const Mutation: MutationResolvers = {
     try {
       Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
-      const media = await Media.find({
+      const media = await Media.find<IMedia>({
         _id: { $in: args.deleteMediaInput?._ids },
       });
 
-      if (media.some((m) => m?.created_by !== context.auth.payload.user?._id)) {
+      if (
+        media.some(
+          (m) => m?.created_by.toString() !== context.auth.payload.user?._id
+        )
+      ) {
         Helpers.Resolver.LimitRole({
           userRole: context.auth.payload.user?.role,
           roleLimit: 1,

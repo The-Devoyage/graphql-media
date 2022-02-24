@@ -1,6 +1,6 @@
 {
   "name": "@the-devoyage/graphql-media",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "",
   "main": "dist/server.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "dependencies": {
     "@apollo/federation": "^0.29.1",
     "@the-devoyage/micro-auth-helpers": "^0.1.19",
-    "@the-devoyage/mongo-filter-generator": "^0.2.2",
+    "@the-devoyage/mongo-filter-generator": "^0.2.3",
     "apollo-server-express": "^3.6.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

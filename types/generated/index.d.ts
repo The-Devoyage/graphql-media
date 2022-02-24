@@ -69,7 +69,7 @@ export type GetMediaInput = {
 export type GetMediaResponse = {
   __typename?: 'GetMediaResponse';
   data: Array<Media>;
-  stats?: Maybe<Stats>;
+  stats: Stats;
 };
 
 export type IntArrayFilter = {
@@ -95,12 +95,12 @@ export enum IntFilterByEnum {
 export type Media = {
   __typename?: 'Media';
   _id: Scalars['ObjectID'];
-  createdAt: Scalars['String'];
+  createdAt: Scalars['DateTime'];
   created_by: User;
   mimetype: Scalars['String'];
   path: Scalars['String'];
   title: Scalars['String'];
-  updatedAt: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type Mutation = {
@@ -325,18 +325,18 @@ export type DeleteMediaResponseResolvers<ContextType = Context, ParentType exten
 
 export type GetMediaResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['GetMediaResponse'] = ResolversParentTypes['GetMediaResponse']> = ResolversObject<{
   data?: Resolver<Array<ResolversTypes['Media']>, ParentType, ContextType>;
-  stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
+  stats?: Resolver<ResolversTypes['Stats'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type MediaResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Media'] = ResolversParentTypes['Media']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['ObjectID'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   created_by?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   mimetype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   path?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -14,7 +14,7 @@ export const Query = gql`
 
   type GetMediaResponse {
     data: [Media!]!
-    stats: Stats
+    stats: Stats!
   }
 
   extend type Query {

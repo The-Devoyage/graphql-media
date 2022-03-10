@@ -45,16 +45,21 @@ const startServer = async () => {
 
 startServer();
 
-let DB = process.env.MONGO_URI!;
-mongoose
-  .connect(DB, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
-  .then(() => console.log("Media DB Connected to Media Service!"))
-  .catch((err) => console.log(err));
+const DB = process.env.MONGO_URI;
+
+if (DB) {
+  mongoose
+    .connect(DB, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    })
+    .then(() => console.log("Media DB Connected to Media Service!"))
+    .catch((err) => console.log(err));
+} else {
+  console.log("Mongo DB Not Connected -- Missing Mongo URI.");
+}
 
 const port = process.env.BACKEND_PORT || 5006;
 

@@ -8,12 +8,12 @@ export const Query: QueryResolvers = {
     try {
       Helpers.Resolver.CheckAuth({ context });
 
-      const { filters, options } = GenerateMongo({
+      const { filter, options } = GenerateMongo({
         fieldFilters: args.getMediaInput,
         config: args.getMediaInput.config,
       });
 
-      const media = await Media.findAndPaginate<IMedia>(filters, options);
+      const media = await Media.findAndPaginate<IMedia>(filter, options);
 
       return media;
     } catch (error) {

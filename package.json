@@ -1,6 +1,6 @@
 {
   "name": "@the-devoyage/graphql-media",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "",
   "main": "dist/server.js",
   "scripts": {
@@ -24,13 +24,12 @@
   "dependencies": {
     "@apollo/federation": "^0.29.1",
     "@the-devoyage/micro-auth-helpers": "^0.1.20",
-    "@the-devoyage/mongo-filter-generator": "^0.2.4",
+    "@the-devoyage/mongo-filter-generator": "^0.3.0",
     "apollo-server-express": "^3.6.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.2",
     "graphql": "^15.7.2",
-    "graphql-middleware": "^6.1.12",
     "graphql-upload": "^13.0.0",
     "module-alias": "^2.2.2",
     "mongoose": "^5.12.2",

@@ -2,13 +2,13 @@ import { gql } from "apollo-server-express";
 
 export const Query = gql`
   input GetMediaInput {
-    path: StringFieldFilter
-    created_by: StringFieldFilter
-    _id: StringFieldFilter
-    title: StringFieldFilter
-    mimetype: StringFieldFilter
-    createdAt: StringFieldFilter
-    updatedAt: StringFieldFilter
+    path: [StringFieldFilter]
+    created_by: [StringFieldFilter]
+    _id: [StringFieldFilter]
+    title: [StringFieldFilter]
+    mimetype: [StringFieldFilter]
+    createdAt: [DateFieldFilter]
+    updatedAt: [DateFieldFilter]
     config: FilterConfig
   }
 

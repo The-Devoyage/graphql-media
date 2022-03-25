@@ -5,7 +5,6 @@ import { findAndPaginatePlugin } from "@the-devoyage/mongo-filter-generator";
 import mongoose from "mongoose";
 mongoose.plugin(findAndPaginatePlugin);
 import { schema } from "./graphql";
-import { applyMiddleware } from "graphql-middleware";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import cors from "cors";
@@ -26,11 +25,9 @@ app.use(express.json());
 
 app.use(mediaConfig.express_route, express.static(mediaConfig.read_directory));
 
-let apolloServer;
-
 const startServer = async () => {
-  apolloServer = new ApolloServer({
-    schema: applyMiddleware(schema),
+  const apolloServer = new ApolloServer({
+    schema,
     context: ({ req }) =>
       Helpers.Subgraph.GenerateContext({
         req,

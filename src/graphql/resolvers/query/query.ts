@@ -8,7 +8,7 @@ export const Query: QueryResolvers = {
     try {
       Helpers.Resolver.CheckAuth({ context });
 
-      const { filter, options } = GenerateMongo({
+      const { filter, options } = GenerateMongo<IMedia>({
         fieldFilters: args.getMediaInput,
         config: args.getMediaInput.config,
       });

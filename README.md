@@ -7,10 +7,6 @@ The `@the-devoyage/graphql-media` microservice is a file uploading server that c
 ### GraphQL File Uploading
 Enable file uploading of static assets such as images, video, audio, text documents, and pdfs with a standard graphql mutation request. 
 
-```ts
-
-```
-
 ### Track Uploaded Media
 Each asset that is uploaded also creates a reference of type `Media`, saved to a mongodb instance.
 
@@ -31,7 +27,7 @@ type Media {
 Once uploaded, files may be served directly from this service or through a proxy/gateway combination. Simply fetch the `Media` record and request the path from the service. 
 
 ```ts
-const photo = `http://media_server:MEDIA_SERVER_PORT/${path}`
+const photoURI = `http://media_server:MEDIA_SERVER_PORT/${path}`
 ```
 
 ## License
@@ -147,3 +143,7 @@ Once you have the file path, the `graphql-media` server can serve the file with 
 ```ts
   const photoURI = `http://media_server:MEDIA_SERVER_PORT/${path}`
 ```
+
+## File Storage
+
+Files are stored in the `uploads` directory in the root of the project. This can be configured within the `media_config.json` file.

@@ -4,7 +4,15 @@ The `@the-devoyage/graphql-media` microservice is a file uploading server that c
 
 ## Features
 
-Enable file uploading of static assets such as images, video, audio, text documents, and pdfs. Each asset that is uploaded also creates a reference record of type `Media` , saved to a mongo db instance.
+### GraphQL File Uploading
+Enable file uploading of static assets such as images, video, audio, text documents, and pdfs with a standard graphql mutation request. 
+
+```ts
+
+```
+
+### Track Uploaded Media
+Each asset that is uploaded also creates a reference of type `Media`, saved to a mongodb instance.
 
 ```graphql
 type Media {
@@ -18,9 +26,21 @@ type Media {
 }
 ```
 
+### Serve Files
+
+Once uploaded, files may be served directly from this service or through a proxy/gateway combination. Simply fetch the `Media` record and request the path from the service. 
+
+```ts
+const photo = `http://media_server:MEDIA_SERVER_PORT/${path}`
+```
+
+## License
+
+This repository provides a GPL License by default. If you want to use this product in a private commericial setting, you may purchase the MIT Licensed Version [Here!](https://thedevoyage.gumroad.com/l/graphql-users)
+
 ### Resolvers
 
-- Get Media - Get a paginated and filterable list of media. You can filter by any property of media.
+- Get Media - Get a paginated and filterable list of media. You can filter by any property type media provides.
 
 - Single File Upload - Upload a single file directly to the "Gateway" server, which then routes the file to this media server.
 
@@ -44,14 +64,6 @@ npm login --registry=https://npm.pkg.github.com
 
 ```
 npm install
-```
-
-If you are using docker to build and run this server, you will need to pass the github token along to the build process.
-
-Assign an environment variable to the Github Token on the Host Machine, as the Dockerfile will check environment variables for the token at build time. Be sure to expire tokens after use.
-
-```bash
-export GITHUB_TOKEN=mytoken
 ```
 
 For docker, you can run:
@@ -101,10 +113,37 @@ interface Context extends Record<string, any> {
 }
 ```
 
-## Recommended Services
+### Extended Properties/Required Services
 
-- `@the-devoyage/graphql-gateway` - An apollo gateway server with pre-configured features such as user authorization, file routing/file upload routing, and supergraph configuration. This repo is compatible with this service and can act as the gateway for this service. [Purchase Access](https://basetools.io/checkout/XGUVNNGr)
+The media service extends federated entities from external services. The following federated services and properties are required in order to run this service.
 
-- `@the-devoyage/graphql-accounts` - An accounts service that handles account creation, authentication, and verification. It is compatible with this service out and can handle supplying the requirements for the `account` property of the token above. [Purchase Access](https://basetools.io/checkout/v0cv56df)
+User
 
-- `@the-devoyage/graphql-users` - A Users Microservice to manage the members of accounts. This service is compatible with the mailer, and can handle supplying the `user` information for the token above. [Purchase Access](https://basetools.io/checkout/dQe81uv0)
+- \_id
+
+If you want to run this service without the `User` entity, it is possible with minimal updating to the code base.
+
+## Usage
+
+### 1. Upload file to server
+
+Create a mutation request to the resolver 'singleFileUpload' with the following variables:
+
+```ts
+export type SingleFileUploadInput = {
+  file: File;
+  title: string;
+};
+```
+
+### 2. Get Media Records
+
+Once uploaded you can fetch `Media` using the `getMedia` query. Type `Media` represents the record of the media in the mongodb, including the path. 
+
+### 3. Fetch Media Asset
+
+Once you have the file path, the `graphql-media` server can serve the file with a HTTP request. The default endpoint is `/uploads`, but this can be configured in the `media_config.json` file.
+
+```ts
+  const photoURI = `http://media_server:MEDIA_SERVER_PORT/${path}`
+```

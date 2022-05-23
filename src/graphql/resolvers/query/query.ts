@@ -9,11 +9,17 @@ export const Query: QueryResolvers = {
       Helpers.Resolver.CheckAuth({ context });
 
       const { filter, options } = GenerateMongo<IMedia>({
-        fieldFilters: args.getMediaInput,
+        fieldFilters: args.getMediaInput.query,
         config: args.getMediaInput.config,
       });
 
-      const media = await Media.findAndPaginate<IMedia>(filter, options);
+      const media = await Media.findAndPaginate<IMedia>(filter, options, {
+        history: {
+          filter: {
+            interval: args.getMediaInput.config?.history?.interval ?? [],
+          },
+        },
+      });
 
       return media;
     } catch (error) {

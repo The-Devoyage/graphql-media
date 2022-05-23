@@ -4,14 +4,15 @@ import path from "path";
 import { Media } from "@src/models";
 import { MutationResolvers, Media as IMedia } from "types/generated";
 import { Helpers } from "@the-devoyage/micro-auth-helpers";
+import { GenerateMongo } from "@the-devoyage/mongo-filter-generator";
 
 export const Mutation: MutationResolvers = {
-  singleFileUpload: async (_parent, args, context) => {
+  createMedia: async (_parent, args, context) => {
     try {
       Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
       const { createReadStream, filename, mimetype } = await args
-        .singleFileUploadInput.file;
+        .createMediaInput.payload.file;
 
       const validMimetypes = context.config.mime_types;
 
@@ -56,7 +57,7 @@ export const Mutation: MutationResolvers = {
       const newMedia = new Media({
         path: path.join(context.config.express_route, mimetype, fileName),
         mimetype,
-        title: args.singleFileUploadInput.title,
+        title: args.createMediaInput.payload.title,
         created_by: context.auth.payload.user?._id,
       });
 
@@ -78,9 +79,11 @@ export const Mutation: MutationResolvers = {
     try {
       Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
-      const media = await Media.find<IMedia>({
-        _id: { $in: args.deleteMediaInput?._ids },
+      const { filter } = GenerateMongo<IMedia>({
+        fieldFilters: args.deleteMediaInput.query,
       });
+
+      const media = await Media.find<IMedia>(filter);
 
       if (
         media.some(
@@ -93,9 +96,7 @@ export const Mutation: MutationResolvers = {
         });
       }
 
-      const deleteStatus = await Media.deleteMany({
-        _id: { $in: args.deleteMediaInput?._ids },
-      });
+      const deleteStatus = await Media.deleteMany(filter);
 
       return { deletedCount: deleteStatus.deletedCount };
     } catch (error) {

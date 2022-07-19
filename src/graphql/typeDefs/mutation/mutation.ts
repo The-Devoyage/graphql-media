@@ -4,7 +4,7 @@ export const Mutation = gql`
   scalar Upload
 
   input CreateMediaInput {
-    payload: MediaPayloadInput!
+    payload: [MediaPayloadInput!]!
   }
 
   input UpdateMediaInput {
@@ -25,8 +25,17 @@ export const Mutation = gql`
     deletedCount: Int!
   }
 
+  type UploadError {
+    error: String!
+  }
+
+  type CreateMediaResponse {
+    media: [Media!]!
+    errors: [UploadError!]!
+  }
+
   extend type Mutation {
-    createMedia(createMediaInput: CreateMediaInput!): Media!
+    createMedia(createMediaInput: CreateMediaInput!): CreateMediaResponse!
     deleteMedia(deleteMediaInput: DeleteMediaInput!): DeleteMediaResponse!
   }
 `;

@@ -8,7 +8,6 @@ generates:
       scalars:
         DateTime: Date
         ObjectID: string
-        Upload: File
     plugins:
       - typescript
       - typescript-resolvers

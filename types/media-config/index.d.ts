@@ -6,5 +6,5 @@ export interface MediaConfig {
     prod: string;
   };
   mime_types: string[];
-  express_route: string;
+  serve_route: string;
 }

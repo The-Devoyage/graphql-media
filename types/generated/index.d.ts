@@ -13,14 +13,20 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** A country code as defined by ISO 3166-1 alpha-2 */
+  CountryCode: any;
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: any;
+  DateTime: Date;
   /** A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/. */
   EmailAddress: any;
   /** A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction. */
   JWT: any;
   /** A field whose value conforms with the standard mongodb object ID as described here: https://docs.mongodb.com/manual/reference/method/ObjectId/#ObjectId. Example: 5e5677d71bdc2ae76344968c */
-  ObjectID: any;
+  ObjectID: string;
+  /** A field whose value conforms to the standard E.164 format as specified in: https://en.wikipedia.org/wiki/E.164. Basically this is +17895551234. */
+  PhoneNumber: any;
+  /** A field whose value conforms to the standard postal code formats for United States, United Kingdom, Germany, Canada, France, Italy, Australia, Netherlands, Spain, Denmark, Sweden, Belgium, India, Austria, Portugal, Switzerland or Luxembourg. */
+  PostalCode: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
   _Any: any;
@@ -48,7 +54,13 @@ export enum BooleanFilterByEnum {
 }
 
 export type CreateMediaInput = {
-  payload: MediaPayloadInput;
+  payload: Array<MediaPayloadInput>;
+};
+
+export type CreateMediaResponse = {
+  __typename?: 'CreateMediaResponse';
+  errors: Array<UploadError>;
+  media: Array<Media>;
 };
 
 /** Filter for documents which have a property that is a Date. */
@@ -77,6 +89,19 @@ export type DeleteMediaResponse = {
   deletedCount: Scalars['Int'];
 };
 
+export enum ExtensionEnum {
+  Avif = 'AVIF',
+  Bmp = 'BMP',
+  Gif = 'GIF',
+  Ico = 'ICO',
+  Jpeg = 'JPEG',
+  Jpg = 'JPG',
+  Png = 'PNG',
+  Svg = 'SVG',
+  Tiff = 'TIFF',
+  Webp = 'WEBP'
+}
+
 /** Global configuration details. */
 export type FilterConfig = {
   history?: InputMaybe<HistoryFilterInput>;
@@ -86,6 +111,7 @@ export type FilterConfig = {
 export type GetMediaInput = {
   config?: InputMaybe<FilterConfig>;
   query: MediaFieldFiltersInput;
+  transform?: InputMaybe<TransformOptions>;
 };
 
 export type GetMediaResponse = {
@@ -93,6 +119,19 @@ export type GetMediaResponse = {
   data: Array<Media>;
   stats: Stats;
 };
+
+export enum GravityEnum {
+  Ce = 'CE',
+  Ea = 'EA',
+  No = 'NO',
+  Noea = 'NOEA',
+  Nowe = 'NOWE',
+  Sm = 'SM',
+  So = 'SO',
+  Soea = 'SOEA',
+  Sowe = 'SOWE',
+  We = 'WE'
+}
 
 export type HistoricStats = {
   __typename?: 'HistoricStats';
@@ -155,6 +194,7 @@ export type Media = {
   created_by: User;
   mimetype: Scalars['String'];
   path: Scalars['String'];
+  src: Scalars['String'];
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -176,7 +216,7 @@ export type MediaPayloadInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createMedia: Media;
+  createMedia: CreateMediaResponse;
   deleteMedia: DeleteMediaResponse;
 };
 
@@ -211,6 +251,14 @@ export type QueryGetMediaArgs = {
   getMediaInput: GetMediaInput;
 };
 
+export enum ResizingTypeEnum {
+  Auto = 'AUTO',
+  Fill = 'FILL',
+  FillDown = 'FILL_DOWN',
+  Fit = 'FIT',
+  Force = 'FORCE'
+}
+
 export type Stats = {
   __typename?: 'Stats';
   cursor?: Maybe<Scalars['DateTime']>;
@@ -243,9 +291,28 @@ export enum StringFilterByEnum {
   Regex = 'REGEX'
 }
 
+export type TransformOptions = {
+  extension?: InputMaybe<ExtensionEnum>;
+  gravity?: InputMaybe<GravityEnum>;
+  resize?: InputMaybe<TransformResizeInput>;
+};
+
+export type TransformResizeInput = {
+  enlarge?: InputMaybe<Scalars['Boolean']>;
+  extend?: InputMaybe<Scalars['Boolean']>;
+  height?: InputMaybe<Scalars['Int']>;
+  resizing_type?: InputMaybe<ResizingTypeEnum>;
+  width?: InputMaybe<Scalars['Int']>;
+};
+
 export type UpdateMediaInput = {
   payload: MediaPayloadInput;
   query: MediaFieldFiltersInput;
+};
+
+export type UploadError = {
+  __typename?: 'UploadError';
+  error: Scalars['String'];
 };
 
 export type User = {
@@ -334,16 +401,20 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   BooleanFieldFilter: BooleanFieldFilter;
   BooleanFilterByEnum: BooleanFilterByEnum;
+  CountryCode: ResolverTypeWrapper<Scalars['CountryCode']>;
   CreateMediaInput: CreateMediaInput;
+  CreateMediaResponse: ResolverTypeWrapper<CreateMediaResponse>;
   DateFieldFilter: DateFieldFilter;
   DateFilterByEnum: DateFilterByEnum;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   DeleteMediaInput: DeleteMediaInput;
   DeleteMediaResponse: ResolverTypeWrapper<DeleteMediaResponse>;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>;
+  ExtensionEnum: ExtensionEnum;
   FilterConfig: FilterConfig;
   GetMediaInput: GetMediaInput;
   GetMediaResponse: ResolverTypeWrapper<GetMediaResponse>;
+  GravityEnum: GravityEnum;
   HistoricStats: ResolverTypeWrapper<HistoricStats>;
   HistoricStatsId: ResolverTypeWrapper<HistoricStatsId>;
   HistoryFilterInput: HistoryFilterInput;
@@ -359,14 +430,20 @@ export type ResolversTypes = ResolversObject<{
   ObjectID: ResolverTypeWrapper<Scalars['ObjectID']>;
   OperatorFieldConfigEnum: OperatorFieldConfigEnum;
   Pagination: Pagination;
+  PhoneNumber: ResolverTypeWrapper<Scalars['PhoneNumber']>;
+  PostalCode: ResolverTypeWrapper<Scalars['PostalCode']>;
   Query: ResolverTypeWrapper<{}>;
+  ResizingTypeEnum: ResizingTypeEnum;
   Stats: ResolverTypeWrapper<Stats>;
   String: ResolverTypeWrapper<Scalars['String']>;
   StringArrayFieldFilter: StringArrayFieldFilter;
   StringFieldFilter: StringFieldFilter;
   StringFilterByEnum: StringFilterByEnum;
+  TransformOptions: TransformOptions;
+  TransformResizeInput: TransformResizeInput;
   UpdateMediaInput: UpdateMediaInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']>;
+  UploadError: ResolverTypeWrapper<UploadError>;
   User: ResolverTypeWrapper<User>;
   _Any: ResolverTypeWrapper<Scalars['_Any']>;
   _Entity: ResolversTypes['Media'] | ResolversTypes['User'];
@@ -380,7 +457,9 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
   BooleanFieldFilter: BooleanFieldFilter;
+  CountryCode: Scalars['CountryCode'];
   CreateMediaInput: CreateMediaInput;
+  CreateMediaResponse: CreateMediaResponse;
   DateFieldFilter: DateFieldFilter;
   DateTime: Scalars['DateTime'];
   DeleteMediaInput: DeleteMediaInput;
@@ -401,13 +480,18 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   ObjectID: Scalars['ObjectID'];
   Pagination: Pagination;
+  PhoneNumber: Scalars['PhoneNumber'];
+  PostalCode: Scalars['PostalCode'];
   Query: {};
   Stats: Stats;
   String: Scalars['String'];
   StringArrayFieldFilter: StringArrayFieldFilter;
   StringFieldFilter: StringFieldFilter;
+  TransformOptions: TransformOptions;
+  TransformResizeInput: TransformResizeInput;
   UpdateMediaInput: UpdateMediaInput;
   Upload: Scalars['Upload'];
+  UploadError: UploadError;
   User: User;
   _Any: Scalars['_Any'];
   _Entity: ResolversParentTypes['Media'] | ResolversParentTypes['User'];
@@ -467,6 +551,16 @@ export type ShareableDirectiveArgs = { };
 
 export type ShareableDirectiveResolver<Result, Parent, ContextType = Context, Args = ShareableDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export interface CountryCodeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['CountryCode'], any> {
+  name: 'CountryCode';
+}
+
+export type CreateMediaResponseResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CreateMediaResponse'] = ResolversParentTypes['CreateMediaResponse']> = ResolversObject<{
+  errors?: Resolver<Array<ResolversTypes['UploadError']>, ParentType, ContextType>;
+  media?: Resolver<Array<ResolversTypes['Media']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
@@ -516,18 +610,27 @@ export type MediaResolvers<ContextType = Context, ParentType extends ResolversPa
   created_by?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   mimetype?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   path?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  createMedia?: Resolver<ResolversTypes['Media'], ParentType, ContextType, RequireFields<MutationCreateMediaArgs, 'createMediaInput'>>;
+  createMedia?: Resolver<ResolversTypes['CreateMediaResponse'], ParentType, ContextType, RequireFields<MutationCreateMediaArgs, 'createMediaInput'>>;
   deleteMedia?: Resolver<ResolversTypes['DeleteMediaResponse'], ParentType, ContextType, RequireFields<MutationDeleteMediaArgs, 'deleteMediaInput'>>;
 }>;
 
 export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ObjectID'], any> {
   name: 'ObjectID';
+}
+
+export interface PhoneNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['PhoneNumber'], any> {
+  name: 'PhoneNumber';
+}
+
+export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['PostalCode'], any> {
+  name: 'PostalCode';
 }
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
@@ -548,6 +651,11 @@ export type StatsResolvers<ContextType = Context, ParentType extends ResolversPa
 export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
   name: 'Upload';
 }
+
+export type UploadErrorResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UploadError'] = ResolversParentTypes['UploadError']> = ResolversObject<{
+  error?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   _id?: Resolver<ResolversTypes['ObjectID'], ParentType, ContextType>;
@@ -576,6 +684,8 @@ export interface Link__ImportScalarConfig extends GraphQLScalarTypeConfig<Resolv
 }
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
+  CountryCode?: GraphQLScalarType;
+  CreateMediaResponse?: CreateMediaResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DeleteMediaResponse?: DeleteMediaResponseResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
@@ -586,9 +696,12 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Media?: MediaResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   ObjectID?: GraphQLScalarType;
+  PhoneNumber?: GraphQLScalarType;
+  PostalCode?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
   Upload?: GraphQLScalarType;
+  UploadError?: UploadErrorResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   _Any?: GraphQLScalarType;
   _Entity?: _EntityResolvers<ContextType>;

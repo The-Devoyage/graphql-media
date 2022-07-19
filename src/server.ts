@@ -9,8 +9,9 @@ import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import cors from "cors";
 import { graphqlUploadExpress } from "graphql-upload";
-import { generateMediaConfig } from "@src/helpers";
+import { generateMediaConfig } from "@src/utils";
 import fs from "fs";
+import path from "path";
 import { Helpers } from "@the-devoyage/micro-auth-helpers";
 dotenv.config();
 
@@ -23,7 +24,15 @@ const mediaConfig = generateMediaConfig(mediaConfigBuffer);
 app.use(cors());
 app.use(express.json());
 
-app.use(mediaConfig.express_route, express.static(mediaConfig.read_directory));
+app.use("/ping", (_, res) => res.json("pong"));
+
+const uploadsPath = path.join(
+  process.cwd(),
+  mediaConfig.read_directory,
+  mediaConfig.serve_route
+);
+
+app.use(mediaConfig.serve_route, express.static(uploadsPath));
 
 const startServer = async () => {
   const apolloServer = new ApolloServer({
@@ -52,6 +61,8 @@ if (DB) {
 } else {
   console.log("Mongo DB Not Connected -- Missing Mongo URI.");
 }
+
+console.log(`Image proxy enabled: ${process.env.ENABLE_IMGPROXY}`);
 
 const port = process.env.BACKEND_PORT || 5006;
 

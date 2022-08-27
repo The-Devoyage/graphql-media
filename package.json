@@ -1,6 +1,6 @@
 {
   "name": "@the-devoyage/graphql-media",
-  "version": "0.1.39",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/server.js",
   "scripts": {

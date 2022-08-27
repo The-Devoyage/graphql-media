@@ -2,85 +2,97 @@ import { finished } from "stream";
 import fs from "fs";
 import path from "path";
 import { Media } from "@src/models";
-import { MutationResolvers, Media as IMedia } from "types/generated";
+import {
+  MutationResolvers,
+  Media as IMedia,
+  UploadError,
+} from "types/generated";
 import { Helpers } from "@the-devoyage/micro-auth-helpers";
+import { GenerateMongo } from "@the-devoyage/mongo-filter-generator";
+import { ApolloError } from "apollo-server-express";
 
 export const Mutation: MutationResolvers = {
-  singleFileUpload: async (_parent, args, context) => {
-    try {
-      Helpers.Resolver.CheckAuth({ context, requireUser: true });
+  createMedia: async (_parent, args, context) => {
+    Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
-      const { createReadStream, filename, mimetype } = await args
-        .singleFileUploadInput.file;
+    const media: IMedia[] = [];
+    const errors: UploadError[] = [];
 
-      const validMimetypes = context.config.mime_types;
+    for (const mediaPayload of args.createMediaInput.payload) {
+      try {
+        const {
+          createReadStream,
+          filename,
+          mimetype,
+        } = await mediaPayload.file;
 
-      const isValidMimetype = validMimetypes.includes(mimetype);
+        const validMimetypes = context.config.mime_types;
 
-      if (!isValidMimetype) {
-        throw new Error("Invalid mime type.");
-      }
+        const isValidMimetype = validMimetypes.includes(mimetype);
 
-      const stream = createReadStream();
-
-      const rootUploadDirectory =
-        process.env.NODE_ENV === "development"
-          ? context.config.write_directory.dev
-          : process.env.NODE_ENV === "staging"
-          ? context.config.write_directory.stag
-          : context.config.write_directory.prod;
-
-      const fullUploadDirectory = path.join(rootUploadDirectory, mimetype);
-
-      if (!fs.existsSync(fullUploadDirectory)) {
-        fs.mkdirSync(fullUploadDirectory, { recursive: true });
-      }
-
-      const fileName = `${
-        context.auth.payload.user?._id
-      }-${Date.now()}-${filename}`;
-
-      const out = fs.createWriteStream(
-        path.join(fullUploadDirectory, fileName)
-      );
-
-      stream.pipe(out);
-
-      finished(out, (err) => {
-        if (err) {
-          console.log(err);
-          throw new Error("Something went wrong when uploading your file.");
+        if (!isValidMimetype) {
+          throw new Error("Invalid mime type.");
         }
-      });
 
-      const newMedia = new Media({
-        path: path.join(context.config.express_route, mimetype, fileName),
-        mimetype,
-        title: args.singleFileUploadInput.title,
-        created_by: context.auth.payload.user?._id,
-      });
+        const stream = createReadStream();
 
-      await newMedia.save();
+        const rootUploadDirectory =
+          process.env.NODE_ENV === "development"
+            ? context.config.write_directory.dev
+            : process.env.NODE_ENV === "staging"
+            ? context.config.write_directory.stag
+            : context.config.write_directory.prod;
 
-      const media = await Media.findOne<IMedia>({ _id: newMedia?._id });
+        const fullUploadDirectory = path.join(rootUploadDirectory, mimetype);
 
-      if (!media) {
-        throw new Error("This media/file can not be found.");
+        if (!fs.existsSync(fullUploadDirectory)) {
+          fs.mkdirSync(fullUploadDirectory, { recursive: true });
+        }
+
+        const fileName = `${
+          context.auth.payload.user?._id
+        }-${Date.now()}-${filename}`;
+
+        const out = fs.createWriteStream(
+          path.join(fullUploadDirectory, fileName)
+        );
+
+        stream.pipe(out);
+
+        finished(out, (err) => {
+          if (err) {
+            console.log(err);
+            throw new Error("Something went wrong when uploading your file.");
+          }
+        });
+
+        const newMedia = new Media({
+          path: path.join("/", mimetype, fileName),
+          mimetype,
+          title: mediaPayload.title,
+          created_by: context.auth.payload.user?._id,
+        });
+
+        await newMedia.save();
+
+        media.push((newMedia as unknown) as IMedia);
+      } catch (error) {
+        console.log(error);
+        errors.push({ error: error as string });
+        continue;
       }
-
-      return media;
-    } catch (error) {
-      console.log(error);
-      throw error;
     }
+    return { media, errors };
   },
   deleteMedia: async (_, args, context) => {
     try {
       Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
-      const media = await Media.find<IMedia>({
-        _id: { $in: args.deleteMediaInput?._ids },
+      const { filter } = GenerateMongo<IMedia>({
+        fieldFilters: args.deleteMediaInput.query,
       });
+
+      const media = await Media.find<IMedia>(filter);
 
       if (
         media.some(
@@ -93,9 +105,45 @@ export const Mutation: MutationResolvers = {
         });
       }
 
+      const rootUploadDirectory =
+        process.env.NODE_ENV === "development"
+          ? context.config.write_directory.dev
+          : process.env.NODE_ENV === "staging"
+          ? context.config.write_directory.stag
+          : context.config.write_directory.prod;
+
+      const idsToDelete: string[] = [];
+      const errors: NodeJS.ErrnoException[] = [];
+
+      for (const m of media) {
+        const mediaPath = path.join(rootUploadDirectory, m.path);
+        try {
+          fs.unlinkSync(mediaPath);
+          idsToDelete.push(m._id);
+        } catch (error) {
+          console.log(error);
+          if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+            idsToDelete.push(m._id);
+          } else {
+            errors.push(error as NodeJS.ErrnoException);
+          }
+        }
+      }
+
       const deleteStatus = await Media.deleteMany({
-        _id: { $in: args.deleteMediaInput?._ids },
+        _id: { $in: idsToDelete },
       });
+
+      if (errors.length) {
+        throw new ApolloError(
+          "Some errors found when deleting media.",
+          "FS_DELETE_FAIL",
+          {
+            deletedCount: deleteStatus.deletedCount,
+            errors,
+          }
+        );
+      }
 
       return { deletedCount: deleteStatus.deletedCount };
     } catch (error) {

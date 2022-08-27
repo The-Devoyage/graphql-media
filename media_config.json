@@ -1,10 +1,15 @@
 {
-  "read_directory": "/uploads",
+  "read_directory": "./public",
+  "serve_route": "/uploads",
   "write_directory": {
-    "dev": "/uploads",
-    "stag": "/uploads",
-    "prod": "/uploads"
+    "dev": "./public/uploads",
+    "stag": "./public/uploads",
+    "prod": "./public/uploads"
   },
-  "mime_types": ["image/jpeg", "image/jpg", "image/png"],
-  "express_route": "/uploads"
+  "mime_types": [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "application/pdf"
+  ]
 }

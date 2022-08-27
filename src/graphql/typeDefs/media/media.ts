@@ -9,5 +9,6 @@ export const Media = gql`
     mimetype: String!
     created_by: User!
     title: String!
+    src: String!
   }
 `;

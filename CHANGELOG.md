@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [v0.2.1]
+
+### Changed
+- Update resolve reference resolver to include `src` property.
+
 ## [v0.2.0]
 
 ### Added

@@ -1,4 +1,5 @@
 import { Media as MediaModel } from "@src/models";
+import { determineSrc } from "@src/utils/create-src";
 import { ApolloError } from "apollo-server-express";
 import { MediaResolvers, Media as IMedia } from "types/generated";
 
@@ -12,7 +13,7 @@ export const Media: MediaResolvers = {
       }
 
       if (process.env.FILE_SERVER_BASE_URL) {
-        media.src = encodeURI(process.env.FILE_SERVER_BASE_URL + media?.path);
+        media.src = determineSrc(media);
       } else {
         throw new ApolloError(
           "Missing env variable, `FILE_SERVER_BASE_URL`, in the Media Micro Service."

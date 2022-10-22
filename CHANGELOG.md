@@ -6,6 +6,8 @@
 
 ### Changed
 - Update resolve reference resolver to include `src` property.
+- Create media finds media from DB before returning.
+- Move SRC Img Proxy Logic to reusable function.
 
 ## [v0.2.0]
 

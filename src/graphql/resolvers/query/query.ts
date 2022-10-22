@@ -2,7 +2,7 @@ import { GenerateMongo } from "@the-devoyage/mongo-filter-generator";
 import { Media } from "@src/models";
 import { QueryResolvers, Media as IMedia } from "types/generated";
 import { Helpers } from "@the-devoyage/micro-auth-helpers";
-import { createSignature } from "@src/utils/create-signature";
+import { createSrc } from "@src/utils/create-src";
 
 export const Query: QueryResolvers = {
   getMedia: async (_parent, args, context) => {
@@ -32,16 +32,12 @@ export const Query: QueryResolvers = {
         },
       });
 
-      for (const m of media.data) {
-        if (
-          m.mimetype.includes("image") &&
-          process.env.ENABLE_IMGPROXY === "true"
-        ) {
-          m.src = createSignature(m.path, args.getMediaInput.transform);
-        } else {
-          m.src = encodeURI(process.env.FILE_SERVER_BASE_URL + m.path);
-        }
-      }
+      const withSrc = createSrc(
+        media.data,
+        args.getMediaInput.transform
+      ) as IMedia[];
+
+      media.data = withSrc;
 
       return media;
     } catch (error) {

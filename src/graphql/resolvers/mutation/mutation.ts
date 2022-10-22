@@ -10,12 +10,13 @@ import {
 import { Helpers } from "@the-devoyage/micro-auth-helpers";
 import { GenerateMongo } from "@the-devoyage/mongo-filter-generator";
 import { ApolloError } from "apollo-server-express";
+import { createSrc } from "@src/utils/create-src";
 
 export const Mutation: MutationResolvers = {
   createMedia: async (_parent, args, context) => {
     Helpers.Resolver.CheckAuth({ context, requireUser: true });
 
-    const media: IMedia[] = [];
+    let media: IMedia[] = [];
     const errors: UploadError[] = [];
 
     for (const mediaPayload of args.createMediaInput.payload) {
@@ -75,13 +76,22 @@ export const Mutation: MutationResolvers = {
 
         await newMedia.save();
 
-        media.push((newMedia as unknown) as IMedia);
+        const newSavedMedia = await Media.findOne<IMedia>({
+          _id: newMedia._id,
+        });
+
+        if (newSavedMedia) {
+          media.push(newSavedMedia);
+        }
       } catch (error) {
         console.log(error);
         errors.push({ error: error as string });
         continue;
       }
     }
+
+    media = createSrc(media) as IMedia[];
+
     return { media, errors };
   },
   deleteMedia: async (_, args, context) => {

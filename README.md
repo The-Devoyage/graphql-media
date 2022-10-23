@@ -50,22 +50,10 @@ By default files are saved in an organized manner in the `/uploads/MIMETYPE/` di
 
 ### Install Dependencies
 
-1. Login to the Github registry with NPM.
-
-```
-npm login --registry=https://npm.pkg.github.com
-```
-
-2. Install Dependencies
+Install with NPM
 
 ```
 npm install
-```
-
-For docker, you can run:
-
-```bash
-docker build -t --build-arg GTIHUB_TOKEN=${GITHUB_TOKEN} .
 ```
 
 ### Configure Environment Variables

@@ -1,10 +1,15 @@
 # Changelog
 
-## [Unreleased]
+## [v0.2.2]
+
+### Changed
+
+- Remove requirements for Github PAT in non docker builds.
 
 ## [v0.2.1]
 
 ### Changed
+
 - Update resolve reference resolver to include `src` property.
 - Create media finds media from DB before returning.
 - Move SRC Img Proxy Logic to reusable function.
